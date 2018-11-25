@@ -1,0 +1,170 @@
+<fieldset id="pre_burn_form_fs4">
+    <legend>Form 3: Pre-Burn Request <small>4/5</small></legend>
+        <div  id="form551c867e2b086"  ><div><div class="form-group">
+        <label class="col-sm-4 control-label" for="day_iso">Anticipated Daytime Wind Flow 
+            <div class="help">
+                <i data-toggle="tooltip" data-title="Help" class="glyphicon glyphicon-info-sign"></i> 
+                <span>The estimated wind speed and range of direction <strong>away from</strong> the pre-burn   location for all daytime wind flows in the pre-burn region. To use this tool enter the average wind   speed, and the minimum and maximum angle (in degrees, less than 360).</span>
+            </div>
+        </label>
+        <style>
+            #map_day_iso {
+                
+            }
+
+            .map-canvas {height:348px;}
+
+            div.stations2 svg {
+                position: absolute;
+            }
+        </style>
+        <div class="col-sm-8">
+        <div class="mapFormWrap">
+        <div class="map-canvas" id="mapday_iso"></div>
+        </div>
+        </div>
+        </div>
+        <script>
+            markerLocation = $("[name='my[location]']").val();markerLocation = markerLocation.replace('(','');
+            markerLocation = markerLocation.replace(')','');
+            mLocArray = markerLocation.split(',');
+            markerLocation = {lat: parseFloat(mLocArray[0]),lng: parseFloat(mLocArray[1])};;
+
+            var map_day_iso = new google.maps.Map(
+                document.getElementById('mapday_iso'), 
+                {
+                    zoom: 11,
+                    center: new google.maps.LatLng(markerLocation.lat, markerLocation.lng),
+                    mapTypeId: google.maps.MapTypeId.TERRAIN,
+                    panControl: false,
+                    zoomControl: true,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    scrollwheel: false
+                }
+            );
+
+            google.maps.event.trigger(map_day_iso, 'resize');
+
+            var marker_center_day_iso = new google.maps.LatLng(markerLocation.lat, markerLocation.lng);
+
+            var marker_day_iso = new google.maps.Marker({
+                position: marker_center_day_iso,
+            });
+
+            marker_day_iso.setMap(map_day_iso)
+
+            //var positionInit = marker_day_iso.getPosition()
+            //$('#day_iso').val(positionInit)
+            //$('#day_iso_lat').val(Math.round10(positionInit.k, -3))
+            //$('#day_iso_lon').val(Math.round10(positionInit.D, -3))
+            
+            google.maps.event.addListener(
+                marker_day_iso, 
+                'position_changed', 
+                function() {
+                    var position = marker_day_iso.getPosition()
+                    $('#day_iso').val(position)
+                    $('#day_iso_lat').val(Math.round10(position.k, -3))
+                    $('#day_iso_lon').val(Math.round10(position.D, -3))
+                }
+            )
+
+        </script>
+        <div class="col-sm-offset-4 col-sm-8" style="">
+            <div class="inline">   
+                <div class="form-group" style="width: 32%; display: inline-block; margin-left: -5px;">
+                    <label class="">Wind Speed (MPH)</label>
+                    <input class="form-control" id="day_iso_speed" placeholder="Wind Speed (MPH)" type="text" value="">
+                </div>
+                <div class="form-group" style="width: 32%; display: inline-block; margin-left: 30px;">
+                    <label class="">Min Degree</label>
+                    <input class="form-control" id="day_iso_init_deg" placeholder="Minimum Degrees" type="text" value="">
+                </div>
+                <div class="form-group" style="width: 33%; display: inline-block; margin-left: 30px;">
+                    <label class="">Max Degree</label>
+                    <input class="form-control" id="day_iso_final_deg" placeholder="Maximum Degrees" type="text" value="">
+                </div>
+            </div>
+        </div>
+        <script>
+            function day_iso_smap(marker_day_iso, iso_day_iso) {
+                var speed = parseFloat($('#day_iso_speed').val());
+                var initDeg = parseFloat($('#day_iso_init_deg').val());
+                var finalDeg = parseFloat($('#day_iso_final_deg').val());
+
+                /** Correct Potentially Erroneous Values **/
+                speed = ((isNaN(speed)) ? 0: speed);
+                speed = ((speed <= 0) ? 0: speed);
+
+                initDeg = ((isNaN(initDeg)) ? 0: initDeg);
+                initDeg = ((initDeg > 360) ? 360: initDeg);
+                initDeg = ((initDeg <= 0) ? 0: initDeg);
+
+                finalDeg = ((isNaN(finalDeg)) ? 0: finalDeg);
+                finalDeg = ((finalDeg > 360) ? 360: finalDeg);
+                finalDeg = ((finalDeg <= 0) ? 0: finalDeg);
+
+                JSONstr = JSON.stringify({initDeg: initDeg, finalDeg: finalDeg, amplitude: speed});
+                $('#day_iso').val(JSONstr);
+
+                $('#day_iso_speed').val(speed);
+                $('#day_iso_init_deg').val(initDeg);
+                $('#day_iso_final_deg').val(finalDeg);
+
+                if (typeof iso_day_iso == 'object') {
+                    var isoc = new isosceles();
+                    new_path = isoc.generatePath(marker_day_iso, initDeg, finalDeg, speed);
+                    iso_day_iso.setPath(new_path);
+                } else {
+                    iso_day_iso = new isosceles(map_day_iso, marker_day_iso, initDeg, finalDeg, speed, '#FFF500');
+                }
+
+                /** Uncomment for user issue testing (e.g. buggy saves) **/
+                console.log("Daytime/Nighttime ISO: DEBUG:");
+                if (typeof iso_day_iso.latLngs.j[0].j != 'undefined') {
+                    console.log("ISO has latlngs:");
+                    console.log(iso_day_iso.latLngs.j[0].j);
+                } else {
+                    console.log("May not be type ISO.");
+                }
+                console.log('Input Value:')
+                console.log($('#day_iso').val());
+
+                return iso_day_iso
+            }
+
+            $('#day_iso_speed').change(function() {
+                if (typeof iso_day_iso == 'object') {
+                    console.log("Speed - Exists");
+                    day_iso_smap(marker_day_iso, iso_day_iso);
+                } else {
+                    console.log("Speed - Doesn't Exist");
+                    iso_day_iso = day_iso_smap(marker_day_iso);
+                }
+            })
+
+            $('#day_iso_init_deg').change(function() {
+                if (typeof iso_day_iso == 'object') {
+                    console.log("InitDeg - Exists");
+                    day_iso_smap(marker_day_iso, iso_day_iso);
+                } else {
+                    console.log("InitDeg - Doesn't Exist");
+                    iso_day_iso = day_iso_smap(marker_day_iso);
+                }
+            })
+
+            $('#day_iso_final_deg').change(function() {
+                if (typeof iso_day_iso == 'object') {
+                    console.log("FinalDeg - Exists");
+                    day_iso_smap(marker_day_iso, iso_day_iso);
+                } else {
+                    console.log("FinalDeg - Doesn't Exist");
+                    iso_day_iso = day_iso_smap(marker_day_iso);
+                }
+            })
+        </script>
+        <input id="day_iso" name="my[day_iso]"  type="hidden" value=""/>
+    </div>
+</div>
+</fieldset>

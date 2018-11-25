@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+<Document>
+
+        <Style id="airshed1">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/1.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed2">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/2.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed3">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/3.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed4">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/4.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed5">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/5.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed6">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/6.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed7">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/7.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed8">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/8.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed9">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/9.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed10">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/10.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed11">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/11.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed12">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/12.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed13">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/13.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed14">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/14.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="airshed15">
+            <IconStyle>
+                <scale>0.75</scale>
+                <Icon>
+                    <href>http://smokemgt.utah.gov/images/15.png</href>
+                </Icon>
+            </IconStyle>
+            <LabelStyle>
+                <scale>0</scale>
+            </LabelStyle>
+        </Style>
+	<Placemark>
+		<name>4</name>
+		<styleUrl>#airshed4</styleUrl>
+		<Point>
+			<coordinates>-112.0136970749545,41.68020687820012,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>5</name>
+		<styleUrl>#airshed5</styleUrl>
+		<Point>
+			<coordinates>-111.8053333979503,41.13908211132451,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>9</name>		
+		<styleUrl>#airshed9</styleUrl>
+		<Point>
+			<coordinates>-110.0039186273587,40.36193708820619,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>10</name>
+		<styleUrl>#airshed10</styleUrl>
+		<Point>
+			<coordinates>-111.5785050725763,39.52223152221908,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>11</name>
+		<styleUrl>#airshed11</styleUrl>
+		<Point>
+			<coordinates>-109.7719134719282,39.63968055658331,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>12</name>
+		<styleUrl>#airshed12</styleUrl>
+		<Point>
+			<coordinates>-110.5567164096339,38.501699852651,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>3</name>
+		<styleUrl>#airshed3</styleUrl>
+		<Point>
+			<coordinates>-113.208551171494,37.26268915658164,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>14</name>
+		<styleUrl>#airshed14</styleUrl>
+		<Point>
+			<coordinates>-111.7372288161868,37.27081939437346,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>15</name>
+		<styleUrl>#airshed15</styleUrl>
+		<Point>
+			<coordinates>-109.6733990412895,37.47623125166782,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>7</name>
+		<styleUrl>#airshed7</styleUrl>
+		<Point>
+			<coordinates>-110.0224519778356,40.89571518007749,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>6</name>
+		<styleUrl>#airshed6</styleUrl>
+		<Point>
+			<coordinates>-111.2453610337408,40.84312434469342,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>1</name>
+		<styleUrl>#airshed1</styleUrl>
+		<Point>
+			<coordinates>-113.173407042361,40.89769873019672,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>13</name>
+		<styleUrl>#airshed13</styleUrl>
+		<Point>
+			<coordinates>-112.1594481104191,38.24081961712797,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>8</name>
+		<styleUrl>#airshed8</styleUrl>
+		<Point>
+			<coordinates>-112.068841451691,39.95279436759415,0</coordinates>
+		</Point>
+	</Placemark>
+	
+	<Placemark>
+		<name>2</name>
+		<styleUrl>#airshed2</styleUrl>
+		<Point>
+			<coordinates>-113.2557066715797,38.71977651217954,0</coordinates>
+		</Point>
+	</Placemark>
+</Document>
+</kml>
