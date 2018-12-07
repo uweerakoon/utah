@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Login / Utah.gov</title>
         <?php
-          $root_path = "/var/www/utah";
+          $root_path = "/Users/udaraweerakoon/managedisaster/managedisastersource/utah";
           echo file_get_contents("{$root_path}/head.html"); ?>
         <script type="text/javascript">
           $(function() {
@@ -39,7 +39,7 @@
                     } else {
                         include_once 'modules/user.php';
                         include_once 'modules/database.php';
-                        include_once '/var/www/utah/.control.php';
+                        include_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/.control.php';
                         include_once "{$root_path}/library.php";
                         include_once "{$root_path}/form_functions.php";
 

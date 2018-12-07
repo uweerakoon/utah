@@ -18,13 +18,13 @@
   <body>
     <div class="container">
 <?php
-include_once '/var/www/modules/database.php';
-include_once '/var/www/modules/user.php';
-include_once '/home/.control.php';
-include_once '/var/www/checklogin.php';
-include_once '/var/www/library.php';
-include_once '/var/www/html_library.php';
-include_once '/var/www/form_functions.php';
+include_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/modules/database.php';
+include_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/modules/user.php';
+include_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/.control.php';
+include_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/checklogin.php';
+include_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/library.php';
+include_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/html_library.php';
+include_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/form_functions.php';
 
 $host = 'http://smokemgt.utah.gov';
 

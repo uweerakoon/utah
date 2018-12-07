@@ -1,7 +1,8 @@
 <?php
 $page_title = "Form 4: Burn Request Manager / Utah.gov";
 include '../checklogin.php';
-$extra_js = "<script type=\"text/javascript\" src=\"../js/burn.js\"></script>
+$extra_js = "<script src=\"../js/modify_records.js\"></script>
+            <script type=\"text/javascript\" src=\"../js/burn.js\"></script>
             <script>
                 Burn = new Burn();
             </script>";

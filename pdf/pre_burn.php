@@ -8,7 +8,7 @@ $pre_burn = new \Manager\PreBurn($db);
 
 if (isset($_GET['id'])) {
     $content = $pre_burn->pdfPage($_GET['id']);
-    $stylesheet = file_get_contents('/var/www/css/style.css');
+    $stylesheet = file_get_contents('/Users/udaraweerakoon/managedisaster/managedisastersource/utah/css/style.css');
 
     ob_clean();
     

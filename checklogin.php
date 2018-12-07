@@ -22,7 +22,7 @@ function checklogin()
     extract(merge_args(func_get_args(), $args));
     global $db, $user_id, $user_name, $user_level, $map_center;
 
-    $root_path = "/var/www/utah";
+    $root_path = "/Users/udaraweerakoon/managedisaster/managedisastersource/utah";
 
     $html = array();
     $map_center = '39.383892, -111.683608';
@@ -78,7 +78,7 @@ function checklogin()
         }
 
         // Include control list.
-        require_once '/var/www/utah/.control.php';
+        require_once '/Users/udaraweerakoon/managedisaster/managedisastersource/utah/.control.php';
 
         // Handling for root (/) without index displayed.
         if ($_SERVER['REQUEST_URI'] == "/") {
@@ -229,7 +229,7 @@ function html_head($title, $link = '', $less = false, $api = null, $extra_js = n
      * Produces the administrative (Utah.gov) page header.
      */
 
-    $root_path = "/var/www/utah";
+    $root_path = "/Users/udaraweerakoon/managedisaster/managedisastersource/utah";
 
     // Google maps API.
     $maps_script = echoapi();

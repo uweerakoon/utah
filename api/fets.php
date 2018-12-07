@@ -50,9 +50,9 @@ if (!(bool)preg_match($pattern, $_POST['start_date'])
 
 
 /** Includes Library Files */
-require_once "/var/www/utah/modules/database.php";
-require_once "/home/.control.php";
-require_once "/var/www/utah/library.php";
+require_once "/Users/udaraweerakoon/managedisaster/managedisastersource/utah/modules/database.php";
+require_once "/Users/udaraweerakoon/managedisaster/managedisastersource/utah/.control.php";
+require_once "/Users/udaraweerakoon/managedisaster/managedisastersource/utah/library.php";
 
 
 /** Get the Fetch Assoc Results */
