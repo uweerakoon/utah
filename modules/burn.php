@@ -474,7 +474,7 @@ class Burn
         return null;
     }
 
-    public function submittalForm($burn_id)
+    public function submittalForm($burn_id, $use_Close = TRUE)
     {
         /**
          *  Creates the html block to change a burn plans status.
@@ -555,15 +555,18 @@ class Burn
             if ($valid) {
                 $html = "<div>
                     <p class=\"text-center\">The draft is completed and can be submitted to Utah.gov.</p>
-                    <button class=\"btn btn-success btn-block\" onclick=\"Burn.submitToUtah($burn_id)\">Submit <strong>$burn_name</strong> to Utah.gov</button>
-                    <button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
-                </div>";
+                    <button class=\"btn btn-success btn-block\" onclick=\"Burn.submitToUtah($burn_id)\">Submit <strong>$burn_name</strong> to Utah.gov</button>";
             } else {
                 $html = "<div>
                         <p class=\"text-center\">The burn request is not completed. Please ensure all required fields are filled in.</p>
-                        <a href=\"?burn=true&id=$burn_id\" role=\"button\" class=\"btn btn-default btn-block\">View Burn Request Details</a>
-                        <button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
+                        <a href=\"?burn=true&id=$burn_id\" role=\"button\" class=\"btn btn-default btn-block\">View Burn Request Details</a>";
+            }
+            if($use_Close) {
+                $html .= "<button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
                 </div>";
+            }
+            else {
+                $html .= "</div>";
             }
         }
 
@@ -735,7 +738,7 @@ class Burn
                 <button class=\"btn $btn_class\" onclick=\"Burn.showForm(1$c_burn_id)\">Back</button>
                 <!-- <button class=\"btn $btn_class\" disabled=\"disabled\" onclick=\"\">Forward</button> -->
                 <button class=\"btn $btn_class\" onclick=\"$save_function\">Save Draft</button>
-                <button class=\"btn $btn_class\" onclick=\"Burn.submitForm($burn_id)\">Submit</button>"
+                <button class=\"btn $btn_class\" onclick=\"Burn.saveUtah()\">Submit</button>"
                 ;
         }
 
@@ -752,28 +755,15 @@ class Burn
         if ($permissions['deny']) {
             exit;
         }
-
-        $added_by = $_SESSION['user']['id'];
-        $added_on = now();
-        $agency_id = $_SESSION['user']['agency_id'];
-        $status_id = $this->draft_id;
-
-        extract(prepare_values($burn));
-
-        $insert_sql = $this->pdo->prepare(
-            "INSERT INTO burns (burn_project_id, pre_burn_id, agency_id, district_id, added_by, added_on, location, manager_name, manager_number, manager_cell, airshed_id, modify_id, request_acres, start_date, end_date, daily_acres, comments, pm_sampler_model, pm_sampler_id, status_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        );
-        $insert_sql = execute_bound($insert_sql, array($burn_project_id, $pre_burn_id, $agency_id, $district_id, $added_by, $added_on, $location, $manager_name, $manager_number, $manager_cell, $airshed_id, $modify_id, $request_acres, $start_date, $end_date, $daily_acres, $comments, $pm_sampler_model, $pm_sampler_id, $status_id));
-
-        if ($insert_sql->rowCount() > 0) {
+        
+        $burn_id = $this->saveBurn($burn);
+        
+        if ($burn_id >= 0) {
             $success_message .= "The Burn Request was saved. ";
         } else {
             $result['error'] = true;
             $error_message .= "The Burn Request could not be saved. ";
         }
-
-        $burn_id = fetch_one("SELECT burn_id FROM burns WHERE pre_burn_id = ? AND added_by = ? AND added_on = ?;", array($pre_burn_id, $added_by, $added_on));
 
         if ($result['error'] == true) {
             $result['message'] = status_message($error_message, "error");
@@ -784,6 +774,54 @@ class Burn
         $this->validateRequired($burn_id);
 
         return $result;
+    }
+    
+    public function saveUtah($burn)
+    {
+        /**
+         *  Save a Burn request.
+         */
+        
+        $permissions = checkFunctionPermissions($_SESSION['user']['id'], array('user','user_district','user_agency'), 'write');
+        if ($permissions['deny']) {
+            exit;
+        }
+        
+        $burn_id = $this->saveBurn($burn);
+        
+        if ($burn_id == -1) {
+            $result['error'] = true;
+            $error_message .= "The Burn Request could not be saved. ";
+            $result['message'] = status_message($error_message, "error");
+            return $result;
+        }
+        $this->validateRequired($burn_id);
+        $html = $this->submittalForm($burn_id, FALSE);
+        return $html;
+    }
+    
+    private function saveBurn($burn) {
+        
+        $added_by = $_SESSION['user']['id'];
+        $added_on = now();
+        $agency_id = $_SESSION['user']['agency_id'];
+        $status_id = $this->draft_id;
+        
+        extract(prepare_values($burn));
+        
+        $insert_sql = $this->pdo->prepare(
+            "INSERT INTO burns (burn_project_id, pre_burn_id, agency_id, district_id, added_by, added_on, location, manager_name, manager_number, manager_cell, airshed_id, modify_id, request_acres, start_date, end_date, daily_acres, comments, pm_sampler_model, pm_sampler_id, status_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            );
+        $insert_sql = execute_bound($insert_sql, array($burn_project_id, $pre_burn_id, $agency_id, $district_id, $added_by, $added_on, $location, $manager_name, $manager_number, $manager_cell, $airshed_id, $modify_id, $request_acres, $start_date, $end_date, $daily_acres, $comments, $pm_sampler_model, $pm_sampler_id, $status_id));
+        
+        if ($insert_sql->rowCount() > 0) {
+            $burn_id = fetch_one("SELECT burn_id FROM burns WHERE pre_burn_id = ? AND added_by = ? AND added_on = ?;", array($pre_burn_id, $added_by, $added_on));
+        } else {
+            $burn_id = -1;
+        }
+        
+        return $burn_id;
     }
 
     public function update($burn, $burn_id)

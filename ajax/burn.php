@@ -35,6 +35,12 @@ switch($_POST['action']) {
         $result = $temp_burn->save($args);
         echo $result['message'];
         break;
+    case "saveUtah":
+        // Save burn plan and submit to utah gov.
+        $args = blah_decode($_POST['args']);
+        $result = $temp_burn->saveUtah($args);
+        echo $result;
+        break;
     case "update":
         // Update burn plan info (checks if the burn plan is an appropriate status).
         $args = blah_decode($_POST['args']);
