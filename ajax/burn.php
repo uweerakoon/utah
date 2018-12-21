@@ -47,6 +47,12 @@ switch($_POST['action']) {
         $result = $temp_burn->update($args, $_POST['burn_id']);
         echo $result['message'];
         break;
+    case "updateUtah":
+        // Update burn plan info (checks if the burn plan is an appropriate status).
+        $args = blah_decode($_POST['args']);
+        $result = $temp_burn->updateUtah($args, $_POST['burn_id']);
+        echo $result;
+        break;
     case "submit":
         // Submit the burn to Utah.gov (change status to pending).
         $result = $temp_burn->submitUtah($_POST['burn_id']);

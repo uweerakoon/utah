@@ -722,8 +722,10 @@ class Burn
         if (isset($burn_id)) {
             $c_burn_id = ", $burn_id";
             $save_function = "Burn.update($burn_id)";
+            $saveUtah_function = "Burn.updateUtah($burn_id)";
         } else {
             $save_function = "Burn.save()";
+            $saveUtah_function = "Burn.saveUtah()";
         }
 
         if ($page == 1) {
@@ -738,7 +740,8 @@ class Burn
                 <button class=\"btn $btn_class\" onclick=\"Burn.showForm(1$c_burn_id)\">Back</button>
                 <!-- <button class=\"btn $btn_class\" disabled=\"disabled\" onclick=\"\">Forward</button> -->
                 <button class=\"btn $btn_class\" onclick=\"$save_function\">Save Draft</button>
-                <button class=\"btn $btn_class\" onclick=\"Burn.saveUtah()\">Submit</button>"
+                <button class=\"btn $btn_class\" onclick=\"$saveUtah_function
+                \">Submit</button>"
                 ;
         }
 
@@ -822,6 +825,17 @@ class Burn
         }
         
         return $burn_id;
+    }
+    
+    public function updateUtah($burn, $burn_id)
+    {
+        $permissions = checkFunctionPermissions($_SESSION['user']['id'], array('user','user_district','user_agency'), 'write');
+        if ($permissions['deny']) {
+            exit;
+        }
+        $this->update($burn, $burn_id);
+        $html = $this->submittalForm($burn_id, FALSE);
+        return $html;
     }
 
     public function update($burn, $burn_id)

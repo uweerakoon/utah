@@ -306,6 +306,26 @@ Burn.prototype.update = function(burn_id)
     });
 }
 
+Burn.prototype.updateUtah = function(burn_id)
+{
+    /**
+     *  Update an existing pre-burn form.
+     */
+
+    var errorPrepend = this.errorPrepend + 'updateUtah():';
+    var jsn = JSON.stringify($(this.formId).serializeArray());
+    this.args = {action: "updateUtah", args: jsn, burn_id: burn_id};
+    var title = "Submit to Utah.gov";
+
+    $.post(this.target, this.args)
+    .done( function(data) {
+    	show_modal_small(data, title);
+    })
+    .fail( function(data) {
+        console.log(errorPrepend + " $.post failed.");
+    });
+}
+
 Burn.prototype.submitForm = function(burn_id)
 {
     /**
