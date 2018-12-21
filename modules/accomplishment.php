@@ -151,8 +151,10 @@ class Accomplishment
         if (isset($accomplishment_id)) {
             $c_accomplishment_id = ", $accomplishment_id";
             $save_function = "Accomplishment.update($accomplishment_id)";
+            $saveUtah_function = "Accomplishment.updateUtah($accomplishment_id)";
         } else {
             $save_function = "Accomplishment.save()";
+            $saveUtah_function = "Accomplishment.saveUtah()";
         }
 
         if ($page == 1) {
@@ -177,6 +179,7 @@ class Accomplishment
               <button class=\"btn $btn_class\" onclick=\"Accomplishment.showForm(1".$c_burn_id."{$c_accomplishment_id})\">Back</button>
               <button class=\"btn $btn_class\" disabled=\"disabled\" onclick=\"\">Forward</button>
               <button class=\"btn $btn_class\" onclick=\"$save_function\">Save Draft</button>
+              <button class=\"btn $btn_class\" onclick=\"$saveUtah_function\">Submit</button>
               <!--<button class=\"btn $btn_class\" onclick=\"Accomplishment.submitForm($accomplishment_id)\">Submit</button>-->";
         }
 
@@ -566,7 +569,7 @@ class Accomplishment
         return $html;
     }
 
-    public function submittalForm($accomplishment_id)
+    public function submittalForm($accomplishment_id, $use_Close = TRUE)
     {
         /**
          *  Creates the html block to change a burn plans status.
@@ -630,15 +633,18 @@ class Accomplishment
             if ($valid) {
                 $html = "<div>
                     <p class=\"text-center\">The draft Accomplishment is complete and can be submitted to Utah.gov.</p>
-                    <button class=\"btn btn-success btn-block\" onclick=\"Accomplishment.submitToUtah($accomplishment_id)\">Submit <strong>$burn_name</strong> to Utah.gov</button>
-                    <button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
-                </div>";
+                    <button class=\"btn btn-success btn-block\" onclick=\"Accomplishment.submitToUtah($accomplishment_id)\">Submit <strong>$burn_name</strong> to Utah.gov</button>";
             } else {
                 $html = "<div>
                         <p class=\"text-center\">The Burn Request Accomplishment is not complete. Please ensure all required fields are filled in.</p>
-                        <a href=\"?burn=true&id=$accomplishment_id\" role=\"button\" class=\"btn btn-default btn-block\">View Burn Request Details</a>
-                        <button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
+                        <a href=\"?burn=true&id=$accomplishment_id\" role=\"button\" class=\"btn btn-default btn-block\">View Burn Request Details</a>";
+            }
+            if($use_Close) {
+                $html .= "<button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
                 </div>";
+            }
+            else {
+                $html .= "</div>";
             }
 
         }
@@ -941,22 +947,59 @@ class Accomplishment
         if ($permissions['deny']) {
             exit;
         }
+        
+        $accomplishment_id = $this->saveAccomplishment($accomplishment);
+        if($accomplishment_id >= 0) {
+            $result['message'] = status_message("The burn accomplishment was saved.", "success");
+        }
+        else {
+            $result['error'] = true;
+            $result['message'] = status_message("The burn accomplishment failed to save, please try again.", "error");
+        }
 
+        $this->validateRequired($accomplishment_id);
+        return $result;
+    }
+    
+    public function saveUtah($accomplishment)
+    {
+        /**
+         *  Submits to Utah.gov an accomplishment.
+         */
+        
+        $permissions = checkFunctionPermissions($_SESSION['user']['id'], array('user','user_district','user_agency'),'write');
+        if ($permissions['deny']) {
+            exit;
+        }
+        
+        $accomplishment_id = $this->saveAccomplishment($accomplishment);
+        if($accomplishment_id == -1) {
+            $result['error'] = true;
+            $result['message'] = status_message("The burn accomplishment failed to save, please try again.", "error");
+            return $result;
+        }
+        
+        $this->validateRequired($accomplishment_id);
+        $html = $this->submittalForm($accomplishment_id, FALSE);
+        return $html;
+    }
+    
+    private function saveAccomplishment($accomplishment) {
         // Defaults
         $added_by = $_SESSION['user']['id'];
         $added_on = now();
         $status_id = 1;
-
+        
         // Extract the broadcast data.
         extract(prepare_values($accomplishment));
-
+        
         // Save the Accomplishment
         $accomplishment_sql = $this->pdo->prepare(
             "
             INSERT INTO accomplishments (agency_id, district_id, burn_project_id, pre_burn_id, burn_id, added_on, added_by, location, clearing_index, state_id, state_comment, resume_date, wfu_updates, wfu_remarks, black_acres_change, total_year_acres, total_project_acres, manager_name, manager_number, manager_cell, manager_fax, start_datetime, end_datetime, public_interest_id, day_vent_id, night_smoke_id, swr_plan_met, primary_ert_id, alternate_primary_ert, primary_ert_pct, secondary_ert_id, alternate_secondary_ert, status_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             "
-        );
+            );
         $accomplishment_sql = execute_bound($accomplishment_sql, array($agency_id, $district_id, $burn_project_id, $pre_burn_id, $burn_id, $added_on, $added_by, $location, $clearing_index, $state_id, $state_comment, $resume_date, $wfu_updates, $wfu_remarks, $black_acres_change, $total_year_acres, $total_project_acres, $manager_name, $manager_number, $manager_cell, $manager_fax, $start_datetime, $end_datetime, $public_interest_id, $day_vent_id, $night_smoke_id, $swr_plan_met, $primary_ert_id, $alternate_primary_ert, $primary_ert_pct, $secondary_ert_id, $alternate_secondary_ert, $status_id));
         if ($accomplishment_sql->rowCount() > 0) {
             $get_accomplishment_sql = $this->pdo->prepare("SELECT accomplishment_id FROM accomplishments WHERE added_on = ? AND added_by = ? AND burn_id = ?;");
@@ -965,10 +1008,9 @@ class Accomplishment
                 $accomplishment_id = $get_accomplishment_sql->fetchColumn(0);
             }
         } else {
-            $result['error'] = true;
-            $result['message'] = status_message("The burn accomplishment failed to save, please try again.", "error");
+            $accomplishment_id = -1;
         }
-
+        
         $fuel_keys = fetch_assoc(
             "SELECT fuel_id, CONCAT(fuel_type, '-', fuel_id) as fuel_type, t.fuel_type_id
             FROM fuel_types t
@@ -976,33 +1018,30 @@ class Accomplishment
             WHERE show_on_form = true
             AND is_active = true
             ORDER BY fuel_id;"
-        );
-
+            );
+        
         foreach($fuel_keys as $value) {
             $form_key = str_replace(array(" ","/","\\"), "-", strtolower($value['fuel_type']));
             $fuel_id = $value['fuel_id'];
-
+            
             extract($accomplishment[$form_key]);
-
+            
             $fuel_sql = $this->pdo->prepare("INSERT INTO accomplishment_fuels (accomplishment_id, fuel_id, black_acres, ton_per_acre, total_tons, tons_emitted) VALUES (?, ?, ?, ?, ?, ?);");
             $fuel_sql = execute_bound($fuel_sql, array($accomplishment_id, $fuel_id, $ba, $tpa, $tcons, $te));
-
+            
             /** Non-form fuel inserts. **/
             $hidden_fuels = fetch_assoc("SELECT * FROM fuels WHERE fuel_type_id = ? AND is_active = true and show_on_form = false;", $value['fuel_type_id']);
-
+            
             if (!$hidden_fuels['error']) {
                 foreach ($hidden_fuels as $hfuel) {
                     $hte = $tcons * $hfuel['ef'];
-
+                    
                     $hfuel_sql = $this->pdo->prepare("INSERT INTO accomplishment_fuels (accomplishment_id, fuel_id, black_acres, ton_per_acre, total_tons, tons_emitted) VALUES (?, ?, ?, ?, ?, ?);");
                     $hfuel_sql = execute_bound($fuel_sql, array($accomplishment_id, $hfuel['fuel_id'], $ba, $tpa, $tcons, $hte));
                 }
             }
         }
-
-        $this->validateRequired($accomplishment_id);
-
-        return $result;
+        return $accomplishment_id;
     }
 
     public function ownerChangeForm($accomplishment_id)
@@ -1109,6 +1148,18 @@ class Accomplishment
             </div>";
         }
 
+        return $html;
+    }
+    
+    public function updateUtah($accomplishment, $accomplishment_id)
+    {
+        $permissions = checkFunctionPermissions($_SESSION['user']['id'], array('user','user_district','user_agency'),'write');
+        if ($permissions['deny']) {
+            exit;
+        }
+        
+        $this->update($accomplishment, $accomplishment_id);
+        $html = $this->submittalForm($accomplishment_id, FALSE);
         return $html;
     }
 

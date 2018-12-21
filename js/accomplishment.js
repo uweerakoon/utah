@@ -309,6 +309,26 @@ Accomplishment.prototype.save = function()
     });
 };
 
+Accomplishment.prototype.saveUtah = function()
+{
+    /**
+     *  Save a daily accomplishment form to the database.
+     */ 
+
+    var errorPrepend = this.errorPrepend + 'saveUtah():';
+    var form = JSON.stringify($(this.formId).serializeArray());
+    this.args = {action: 'saveUtah', form: form}
+    var title = "Submit to Utah.gov";
+
+    $.post(this.target, this.args)
+    .done( function(data) {
+    	show_modal_small(data, title);
+    })
+    .fail( function() {
+        console.log(errorPrepend + ' $.post failed.');
+    });
+};
+
 Accomplishment.prototype.update = function(accomplishment_id)
 {
     /**
@@ -324,6 +344,26 @@ Accomplishment.prototype.update = function(accomplishment_id)
     .done( function(data) {
         $(anchor.formId).html(data);
         anchor.refresh();
+    })
+    .fail( function(data) {
+        console.log(errorPrepend + " $.post failed.");
+    });
+};
+
+Accomplishment.prototype.updateUtah = function(accomplishment_id)
+{
+    /**
+     *  Update an existing accomplishment request.
+     */
+
+    var errorPrepend = this.errorPrepend + 'updateUtah():';
+    var jsn = JSON.stringify($(this.formId).serializeArray());
+    this.args = {action: "updateUtah", args: jsn, accomplishment_id: accomplishment_id};
+    var title = "Submit to Utah.gov";
+
+    $.post(this.target, this.args)
+    .done( function(data) {
+    	show_modal_small(data, title);
     })
     .fail( function(data) {
         console.log(errorPrepend + " $.post failed.");

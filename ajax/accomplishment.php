@@ -39,6 +39,10 @@ switch($_POST['action']) {
         $result = $accomplishment->save(blah_decode($_POST['form']));
         echo $result['message'];
         break;
+    case "saveUtah":
+        $result = $accomplishment->saveUtah(blah_decode($_POST['form']));
+        echo $result;
+        break;
     case "owner-change-form":
         // Delete the burn plan (checks if the burn is an appropriate status).
         echo $accomplishment->ownerChangeForm($_POST['accomplishment_id']);
@@ -87,6 +91,11 @@ switch($_POST['action']) {
         $args = blah_decode($_POST['args']);
         $result = $accomplishment->update($args, $_POST['accomplishment_id']);
         echo $result['message'];
+        break;
+    case "updateUtah":
+        $args = blah_decode($_POST['args']);
+        $html = $accomplishment->updateUtah($args, $_POST['accomplishment_id']);
+        echo $html;
         break;
     default:
         echo status_message("Burn Accomplishment action does not exist.", "error");
