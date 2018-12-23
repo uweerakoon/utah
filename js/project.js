@@ -334,6 +334,27 @@ BurnProject.prototype.save = function()
     });
 }
 
+
+BurnProject.prototype.saveUtah = function()
+{
+    /**
+     *  Save and submit a new burn plan.
+     */
+
+    var errorPrepend = this.errorPrepend + 'saveUtah():';
+    var jsn = JSON.stringify($(this.formId).serializeArray());
+    this.args = {action: "saveUtah", args: jsn};
+    var title = "Submit to Utah.gov";
+
+    $.post(this.target, this.args)
+    .done( function(data) {
+    	show_modal_small(data, title);
+    })
+    .fail( function(data) {
+        console.log(errorPrepend + " $.post failed.");
+    });
+}
+
 BurnProject.prototype.update = function(burn_project_id)
 {
     /**
@@ -349,6 +370,26 @@ BurnProject.prototype.update = function(burn_project_id)
     .done( function(data) {
         $(anchor.formId).html(data);
         anchor.refresh();
+    })
+    .fail( function(data) {
+        console.log(errorPrepend + " $.post failed.");
+    });
+}
+
+BurnProject.prototype.updateUtah = function(burn_project_id)
+{
+    /**
+     *  Update the specified burn plan.
+     */
+
+    var errorPrepend = this.errorPrepend + 'updateUtah():';
+    var jsn = JSON.stringify($(this.formId).serializeArray());
+    this.args = {action: "updateUtah", args: jsn, burn_project_id: burn_project_id};
+    var title = "Submit to Utah.gov";
+
+    $.post(this.target, this.args)
+    .done( function(data) {
+    	show_modal_small(data, title);
     })
     .fail( function(data) {
         console.log(errorPrepend + " $.post failed.");

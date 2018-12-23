@@ -33,11 +33,21 @@ switch($_POST['action']) {
         $args = blah_decode($_POST['args']);
         echo $temp_project->saveBurn($args);
         break;
+    case "saveUtah":
+        $args = blah_decode($_POST['args']);
+        echo $temp_project->saveBurnUtah($args);
+        break;
     case "update":
         // Update burn plan info (checks if the burn plan is an appropriate status).
         $args = blah_decode($_POST['args']);
         $result = $temp_project->updateBurn($args, $_POST['burn_project_id']);
         echo $result['message'];
+        break;
+    case "updateUtah":
+        // Update burn plan info (checks if the burn plan is an appropriate status).
+        $args = blah_decode($_POST['args']);
+        $html = $temp_project->updateBurnUtah($args, $_POST['burn_project_id']);
+        echo $html;
         break;
     case "get-status":
         // Delete the burn plan (checks if the burn an appropriate status).

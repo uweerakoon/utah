@@ -185,7 +185,7 @@ class BurnProject
         return $html;
     }
 
-    public function submittalForm($burn_project_id)
+    public function submittalForm($burn_project_id, $use_Close = TRUE)
     {
         /**
          *  Creates the html block to change a Burn Projects status.
@@ -250,15 +250,18 @@ class BurnProject
             if ($valid) {
                 $html = "<div>
                     <p class=\"text-center\">The draft is completed and can be submitted to Utah.gov.</p>
-                    <button class=\"btn btn-success btn-block\" onclick=\"BurnProject.submitToUtah($burn_project_id)\">Submit <strong>$burn_name</strong> to Utah.gov</button>
-                    <button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
-                </div>";
+                    <button class=\"btn btn-success btn-block\" onclick=\"BurnProject.submitToUtah($burn_project_id)\">Submit <strong>$burn_name</strong> to Utah.gov</button>";
             } else {
                 $html = "<div>
                         <p class=\"text-center\">The Burn Project is not completed. Please ensure all required fields are filled in.</p>
-                        <a href=\"?detail=true&id=$burn_project_id\" role=\"button\" class=\"btn btn-default btn-block\">View Burn Project Details</a>
-                        <button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
+                        <a href=\"?detail=true&id=$burn_project_id\" role=\"button\" class=\"btn btn-default btn-block\">View Burn Project Details</a>";
+            }
+            if($use_Close) {
+                $html .= "<button class=\"btn btn-default btn-block\" onclick=\"cancel_modal()\">Cancel</button>
                 </div>";
+            }
+            else {
+                $html .= "</div>";
             }
 
         }
@@ -535,18 +538,53 @@ class BurnProject
             exit;
         }
 
+        $burn_project_id = $this->saveBurnProject($burn);
+        if ($burn_project_id >= 0) {
+            $this->validateRequired($burn_project_id);
+        } else {
+            $result['error'] = true;
+            $result['message'] = status_message("The Burn Project failed to save, please try again.", "error");
+        }
+
+        return $result;
+    }
+    
+    public function saveBurnUtah($burn)
+    {
+        /**
+         *  Submits a Burn Project form with new status. Will be in approvals listing.
+         */
+        
+        $permissions = checkFunctionPermissions($_SESSION['user']['id'], array('user','user_district','user_agency'), 'write');
+        if ($permissions['deny']) {
+            exit;
+        }
+        
+        $burn_project_id = $this->saveBurnProject($burn);
+        if ($burn_id == -1) {
+            $result['error'] = true;
+            $error_message .= "The Burn Request could not be saved. ";
+            $result['message'] = status_message($error_message, "error");
+            return $result;
+        }
+        $this->validateRequired($burn_project_id);
+        $html = $this->submittalForm($burn_project_id, FALSE);
+        return $html;
+    }
+    
+    private function saveBurnProject($burn) {
         // Defaults
         $added_by = $_SESSION['user']['id'];
         $added_on = now();
         $agency_id = $_SESSION['user']['agency_id'];
         $district_id = 1;
-
+        
         // Set the burn to "draft"
         $status_id = $this->status['draft']['id'];
-
+        
         // Extract the burn project data.
         extract(prepare_values($burn));
-
+        
         // Save the Burn Project
         $burn_project_sql = $this->pdo->prepare(
             "INSERT INTO burn_projects (agency_id, district_id, project_name, project_number, added_on, added_by,
@@ -555,7 +593,7 @@ class BurnProject
               first_burn, duration, ignition_method, other_ignition_method, county, comment, status_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             "
-        );
+            );
         $burn_project_sql = execute_bound($burn_project_sql, array($agency_id, $district_id, $project_name,
             $project_number, $added_on, $added_by, $airshed_id, $location, $class_1, $non_attainment,
             $de_minimis, $project_acres, $completion_year, $black_acres_current, $elevation_low,
@@ -563,13 +601,24 @@ class BurnProject
             $other_ignition_method, $county, $comment, $status_id));
         if ($burn_project_sql->rowCount() > 0) {
             $burn_project_id = fetch_one("SELECT burn_project_id FROM burn_projects WHERE added_on = ? AND agency_id = ?;", array($added_on, $agency_id));
-            $this->validateRequired($burn_project_id);
         } else {
-            $result['error'] = true;
-            $result['message'] = status_message("The Burn Project failed to save, please try again.", "error");
+            $burn_project_id = -1;
         }
-
-        return $result;
+        return $burn_project_id;
+    }
+    
+    public function updateBurnUtah($burn, $burn_project_id) {
+        $permissions = checkFunctionPermissions($_SESSION['user']['id'], array('user','user_district','user_agency'), 'write');
+        if ($permissions['deny']) {
+            exit;
+        }
+        $result = $this->updateBurn($burn, $burn_project_id);
+        if(isset($result)) {
+            return $result;
+        }
+        $this->validateRequired($burn_project_id);
+        $html = $this->submittalForm($burn_project_id, FALSE);
+        return $html;
     }
 
     /**
